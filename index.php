@@ -16,52 +16,51 @@ $urlPieces = explode('/', urldecode($url));
 header('Content-Type: application/json');
 header('Accept-version: v1');
 
-
-Logger::logText($urlPieces);
-
 require_once 'classes/Movie.php';
 $movie = new Movie();
 
 http_response_code(200);
 
-switch ($_GET['action']) {
-    case 'list':
-        echo json_encode($movie->list());
-        break;
-    case 'search':
-        $searchText = trim($_GET['s'] ?? '');
-
-        if ($searchText === '') {
-            reportError('No searchword is added');
-        } else {
-            echo json_encode($movie->search($searchText));
-        }
-        break;
-    case 'get':
-        $movieID = trim($_GET['id'] ?? '');
-
-        if ($movieID === '') {
-            reportError('No movie ID is added');
-        } else {
-            echo json_encode($movie->get($movieID));
-        }
-        break;
-    case 'add':
-        $name = trim($_GET['name'] ?? '');
-        if ($name === '') {
-            reportError();
-        } else {
-            http_response_code(201);
-            echo json_encode($movie->add($name));
-        }
-        break;
-    case 'edit':
-        break;
-    case 'delete':
-        break;
-    default:
-        http_response_code(405);
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $newMovieName = trim(htmlspecialchars($_POST['movie_name'])??'');
+    if ($newMovieName === '') {
+        reportError('No movie name given');
+    } else {
+        http_response_code(201);
+        echo json_encode($movie->add($newMovieName));
+    }
+} elseif($_SERVER['REQUEST_METHOD'] === 'GET') {
+    switch ($_GET['action']) {
+        case 'list':
+            echo json_encode($movie->list());
+            break;
+        case 'search':
+            $searchText = trim($_GET['s'] ?? '');
+    
+            if ($searchText === '') {
+                reportError('No searchword is added');
+            } else {
+                echo json_encode($movie->search($searchText));
+            }
+            break;
+        case 'get':
+            $movieID = trim($_GET['id'] ?? '');
+    
+            if ($movieID === '') {
+                reportError('No movie ID is added');
+            } else {
+                echo json_encode($movie->get($movieID));
+            }
+            break;
+        case 'edit':
+            break;
+        case 'delete':
+            break;
+        default:
+            http_response_code(405);
+    }
 }
+
 
 // foreach($urlPieces as $piece) {
 //     switch ($urlPieces) {

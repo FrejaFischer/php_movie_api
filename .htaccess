@@ -11,7 +11,12 @@ RewriteRule ^movies$ ?action=search&search_text= [L,QSA]
 # Handle get movie by id
 RewriteRule ^movies\/(\d+)$ ?action=get&id=$1 [NC,L]
 
+# Handle getting all movies
 RewriteRule ^movies$ ?action=list [NC,L]
+
+# Handle posting new movie
+# RewriteRule ^movies$ ?action=add [NC,L]
+
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [QSA,L]
