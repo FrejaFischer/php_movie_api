@@ -37,6 +37,15 @@ switch ($_GET['action']) {
             echo json_encode($movie->search($searchText));
         }
         break;
+    case 'get':
+        $movieID = trim($_GET['id'] ?? '');
+
+        if ($movieID === '') {
+            reportError('No movie ID is added');
+        } else {
+            echo json_encode($movie->get($movieID));
+        }
+        break;
     case 'add':
         $name = trim($_GET['name'] ?? '');
         if ($name === '') {
@@ -47,7 +56,6 @@ switch ($_GET['action']) {
         }
         break;
     case 'edit':
-
         break;
     case 'delete':
         break;

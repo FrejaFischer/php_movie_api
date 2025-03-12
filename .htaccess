@@ -1,5 +1,6 @@
 RewriteEngine On
 
+# Handle search request
 RewriteCond %{QUERY_STRING} ^s=(.+)$ [NC]
 RewriteRule ^movies$ ?action=search&search_text=$1 [L,QSA]
 
@@ -7,10 +8,10 @@ RewriteRule ^movies$ ?action=search&search_text=$1 [L,QSA]
 RewriteCond %{QUERY_STRING} ^s=$ [NC]
 RewriteRule ^movies$ ?action=search&search_text= [L,QSA]
 
-#RewriteRule ^movies\s=(.+)$ ?action=search&search_text=$1 [NC,L]
+# Handle get movie by id
+RewriteRule ^movies\/(\d+)$ ?action=get&id=$1 [NC,L]
 
+RewriteRule ^movies$ ?action=list [NC,L]
 
-# RewriteRule ^movies$ ?action=list [NC,L]
-
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteRule ^ index.php [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
