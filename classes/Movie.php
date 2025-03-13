@@ -27,9 +27,11 @@ class Movie extends DB
      * @param The message associated with the error
      * @return array an associative array with the corresponding error message
      */
-    private function setError(string $errorMessage): array
+    private function setError(string $errorMessage, int $responseCode): array
     {
+        http_response_code($responseCode);
         $errorInfo['_error'] = $errorMessage;
+        Logger::logText('error', $errorInfo);
         return $errorInfo;
     }
 
@@ -40,7 +42,7 @@ class Movie extends DB
      */
     public function list(): array
     {
-        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR); };
+        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR, 500); };
         $results = [];
 
         $sql =<<<'SQL'
@@ -62,7 +64,7 @@ class Movie extends DB
             $this->disconnect();
         }
         
-        return !$results ? Movie::setError(Movie::DB_SQL_ERROR) : $results;
+        return !$results ? Movie::setError(Movie::DB_SQL_ERROR, 500) : $results;
     }
 
     /**
@@ -74,7 +76,7 @@ class Movie extends DB
      */
     public function search(string $searchText): array 
     {
-        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR); };
+        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR, 500); };
         $results = [];
 
         $sql =<<<'SQL'
@@ -97,7 +99,7 @@ class Movie extends DB
             $this->disconnect();
         }
         
-        return !$results ? Movie::setError(Movie::DB_SQL_ERROR) : $results;
+        return !$results ? Movie::setError(Movie::DB_SQL_ERROR, 500) : $results;
     }
 
     /**
@@ -108,7 +110,7 @@ class Movie extends DB
      */
     public function get(int $movieID): array
     {
-        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR); };
+        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR, 500); };
         $results = [];
         
         $sql =<<<'SQL'
@@ -131,7 +133,7 @@ class Movie extends DB
             $this->disconnect();
         }
         
-        return !$results ? Movie::setError(Movie::DB_SQL_ERROR) : $results;
+        return !$results ? Movie::setError(Movie::DB_SQL_ERROR, 500) : $results;
     }
 
     /**
@@ -143,7 +145,7 @@ class Movie extends DB
      */
     public function add(string $movieName): array 
     {
-        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR); };
+        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR, 500); };
         $sql =<<<'SQL'
             INSERT INTO movies
                 (cName)
@@ -164,9 +166,9 @@ class Movie extends DB
         }
         
         if (!$results) {
-            return Movie::setError(Movie::DB_SQL_ERROR);
+            return Movie::setError(Movie::DB_SQL_ERROR, 500);
         }
-        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS) : ['id' => $lastInsertID];
+        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $lastInsertID];
     }
 
     /**
@@ -179,7 +181,7 @@ class Movie extends DB
      */
     public function update(int $movieID, string $movieName): array 
     {
-        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR); };
+        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR, 500); };
         $sql =<<<'SQL'
             UPDATE movies
             SET cName = ?
@@ -199,9 +201,9 @@ class Movie extends DB
         }
 
         if (!$results) {
-            return Movie::setError(Movie::DB_SQL_ERROR);
+            return Movie::setError(Movie::DB_SQL_ERROR, 500);
         }            
-        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS) : ['id' => $movieID];
+        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $movieID];
     }
 
     /**
@@ -213,7 +215,7 @@ class Movie extends DB
      */
     public function delete(int $movieID): array 
     {
-        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR); };
+        if (!$this->connect()) { return Movie::setError(Movie::DB_CONN_ERROR, 500); };
         $sql =<<<'SQL'
             DELETE FROM movies
             WHERE nMovieID = ?;
@@ -232,8 +234,8 @@ class Movie extends DB
         }
         
         if (!$results) {
-            return Movie::setError(Movie::DB_SQL_ERROR);
+            return Movie::setError(Movie::DB_SQL_ERROR, 500);
         }
-        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS) : ['id' => $movieID];
+        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $movieID];
     }
 }
