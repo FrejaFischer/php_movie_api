@@ -1,17 +1,4 @@
 <?php
-/**
- * Movie class
- * 
- * @author Arturo Mora-Rioja
- * @version 1.0 January/September 2019
- *          1.1 May 2020:
- *              Output format changed into json
- *              Row count added to output
- *              get() method added
- *          1.2 December 2024
- *              Code updated for PHP8
- *              Return values amended
- */
 
 require_once __DIR__ . '/DB.php';
 
@@ -24,7 +11,8 @@ class Movie extends DB
     /**
      * Returns a formatted error message
      * 
-     * @param The message associated with the error
+     * @param string The message associated with the error
+     * @param int the reponsecode to send back
      * @return array an associative array with the corresponding error message
      */
     private function setError(string $errorMessage, int $responseCode): array
@@ -70,7 +58,7 @@ class Movie extends DB
     /**
      * Retrieves the movies whose name matches a certain text
      * 
-     * @param  text upon which to execute the search
+     * @param string text upon which to execute the search
      * @return array the total number of movies matching the search plus matching movie fields (ID, movie name) for each movie
      *          ordered by movie name
      */
@@ -105,7 +93,7 @@ class Movie extends DB
     /**
      * Retrieves the ID and name of a movie based on its ID
      * 
-     * @param  ID of the movie to find
+     * @param int ID of the movie to find
      * @return array number of movies returned (0 or 1) and ID and name of the matching movie, if it exists
      */
     public function get(int $movieID): array
@@ -139,7 +127,7 @@ class Movie extends DB
     /**
      * Inserts a new movie
      * 
-     * @param  name of the new movie
+     * @param string name of the new movie
      * @return array an associative array with the new movie ID
      *      or with error information if there was an error
      */
@@ -174,8 +162,8 @@ class Movie extends DB
     /**
      * Updates the name of a movie
      * 
-     * @param id of the movie to update
-     * @param new name of the movie
+     * @param int id of the movie to update
+     * @param string new name of the movie
      * @return array an associative array with the updated movie ID
      *      or with error information if there was an error
      */
@@ -209,7 +197,7 @@ class Movie extends DB
     /**
      * Deletes a movie
      * 
-     * @param id of the movie to delete
+     * @param int id of the movie to delete
      * @return array an associative array with the deleted movie ID
      *      or with error information if there was an error
      */
