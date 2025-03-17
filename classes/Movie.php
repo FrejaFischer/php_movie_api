@@ -24,6 +24,21 @@ class Movie extends DB
     }
 
     /**
+     * Add HATEOAS to the returned results
+     */
+    public function addHATEOAS()
+    {
+        $serverPath = $_SERVER['REQUEST_URI'];
+        $hateoas = [['rel'=>'movies', 'href'=>$serverPath, 'type'=>'GET'], 
+        ['rel'=>'movies', 'href'=>$serverPath . '/{id}', 'type'=>'GET'], 
+        ['rel'=>'movies', 'href'=>$serverPath, 'type'=>'POST'], 
+        ['rel'=>'movies', 'href'=>$serverPath . '/{id}', 'type'=>'PUT'], 
+        ['rel'=>'movies', 'href'=>$serverPath . '/{id}', 'type'=>'DELETE']];
+        
+        return $hateoas;
+    }
+
+    /**
      * Retrieves information of all the movies
      * 
      * @return array the total number of movies and all movie fields (ID, movie name) for each movie ordered by movie name
@@ -50,6 +65,10 @@ class Movie extends DB
         } finally {
             $stmt = null;
             $this->disconnect();
+        }
+
+        if($results) {
+            $results['_links'] = $this->addHATEOAS();
         }
         
         return !$results ? Movie::setError(Movie::DB_SQL_ERROR, 500) : $results;
@@ -86,6 +105,10 @@ class Movie extends DB
             $stmt = null;
             $this->disconnect();
         }
+
+        if($results) {
+            $results['_links'] = $this->addHATEOAS();
+        }
         
         return !$results ? Movie::setError(Movie::DB_SQL_ERROR, 500) : $results;
     }
@@ -119,6 +142,10 @@ class Movie extends DB
         } finally {
             $stmt = null;
             $this->disconnect();
+        }
+
+        if($results) {
+            $results['_links'] = $this->addHATEOAS();
         }
         
         return !$results ? Movie::setError(Movie::DB_SQL_ERROR, 500) : $results;
@@ -156,7 +183,8 @@ class Movie extends DB
         if (!$results) {
             return Movie::setError(Movie::DB_SQL_ERROR, 500);
         }
-        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $lastInsertID];
+
+        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $lastInsertID, '_links' => $this->addHATEOAS()];
     }
 
     /**
@@ -190,8 +218,9 @@ class Movie extends DB
 
         if (!$results) {
             return Movie::setError(Movie::DB_SQL_ERROR, 500);
-        }            
-        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $movieID];
+        }
+
+        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $movieID, '_links' => $this->addHATEOAS()];
     }
 
     /**
@@ -224,6 +253,7 @@ class Movie extends DB
         if (!$results) {
             return Movie::setError(Movie::DB_SQL_ERROR, 500);
         }
-        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $movieID];
+
+        return $rowCount === 0 ? Movie::setError(Movie::NO_ROWS, 200) : ['id' => $movieID, '_links' => $this->addHATEOAS()];
     }
 }

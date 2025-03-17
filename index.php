@@ -21,7 +21,23 @@ $movie = new Movie();
 
 http_response_code(200);
 
+// Check if "/" is requested (root of API)
+if(count($urlPieces)===1) {
+    echo json_encode($movie->addHATEOAS());
+    exit;
+}
+
 // Check if server if POST, GET, PUT or DELETE
+if($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $movieID = trim($urlPieces[2] ?? '');
+
+    if ($movieID === '') {
+        reportError('No movie ID is added');
+    } else {
+        echo json_encode($movie->delete($movieID));
+    }
+}
+
 if($_SERVER['REQUEST_METHOD'] === 'PUT') {
     //$data = json_decode(file_get_contents('php://input'), true); // For raw json
     //parse_str(file_get_contents('php://input'), $data); // For x-www-from-urlencoded
@@ -85,6 +101,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'GET') {
+
     // Getting data from the API
     switch ($_GET['action']) {
         case 'list':
@@ -118,6 +135,13 @@ if($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 }
 
+function reportError(string $message = 'Incorrect parameters')
+{
+    http_response_code(400);
+    echo json_encode([
+        'error' => $message
+    ]);
+}
 
 // foreach($urlPieces as $piece) {
 //     switch ($urlPieces) {
@@ -150,11 +174,3 @@ if($_SERVER['REQUEST_METHOD'] === 'GET') {
 //             http_response_code(405);
 //     }
 // }
-
-function reportError(string $message = 'Incorrect parameters')
-{
-    http_response_code(400);
-    echo json_encode([
-        'error' => $message
-    ]);
-}
